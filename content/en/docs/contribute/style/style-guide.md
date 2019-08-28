@@ -14,10 +14,12 @@ This page gives writing style guidelines for the Kubernetes documentation.
 These are guidelines, not rules. Use your best judgment, and feel free to
 propose changes to this document in a pull request.
 
-For additional information on creating new content for the Kubernetes
-docs, follow the instructions on
-[using page templates](/docs/contribute/style/page-templates/) and
-[creating a documentation pull request](/docs/contribute/start/#improve-existing-content).
+For additional information on creating new content for the Kubernetes 
+documentation, read the [Documentation Content 
+Guide](/docs/contribute/style/content-guide/) and follow the instructions on 
+[using page templates](/docs/contribute/style/page-templates/) and [creating a 
+documentation pull request](/docs/contribute/start/#improve-existing-content).
+
 {{% /capture %}}
 
 {{% capture body %}}
@@ -216,7 +218,7 @@ Hugo [Shortcodes](https://gohugo.io/content-management/shortcodes) help create d
 
     ```
     {{</* note */>}}
-    No need to include a prefix; the shortcode automatically provides on (Note:, Caution:, etc.).
+    No need to include a prefix; the shortcode automatically provides one. (Note:, Caution:, etc.)
     {{</* /note */>}}
     ```
 

@@ -7,7 +7,7 @@ weight: 40
 
 {{% capture overview %}}
 
-本セクションは、Kubernetesの構成要素、Kubernetesがクラスターを表現するための抽象概念、更にKubernetesがどのように動いているかについて深く理解する助けになります。
+本セクションは、Kubernetesシステムの各パートと、クラスターを表現するためにKubernetesが使用する抽象概念について学習し、Kubernetesの仕組みをより深く理解するのに役立ちます。
 
 {{% /capture %}}
 
@@ -15,28 +15,27 @@ weight: 40
 
 ## 概要
 
-Kubernetesと連携するには、クラスタの*望ましい状態*を記述するため*APIオブジェクト*を利用します: 何のアプリケーション、またはワークロードを走らせたいか、どのコンテナイメージを使うか、レプリカの数はいくつにするか、何のネットワーク、ディスクリソースを利用可能にするか、などです。望ましい状態を、KubernetesのAPIを通じてAPIオブジェクトを作成しセットします。それは一般的にコマンドラインインターフェースである `kubectl` から実行されます。またKubernetesのAPIを直接操作し、クラスターの望ましい状態をセット、変更することも可能です。
+Kubernetesを機能させるには、*Kubernetes API オブジェクト* を使用して、実行したいアプリケーションやその他のワークロード、使用するコンテナイメージ、レプリカ(複製)の数、どんなネットワークやディスクリソースを利用可能にするかなど、クラスターの *desired state* (望ましい状態)を記述します。desired sate (望ましい状態)をセットするには、Kubernetes APIを使用してオブジェクトを作成します。通常はコマンドラインインターフェイス `kubectl` を用いてKubernetes APIを操作しますが、Kubernetes APIを直接使用してクラスターと対話し、desired state (望ましい状態)を設定、または変更することもできます。
 
-一度望ましい状態をセットすると、*Kubernetesコントロールプレーン*がクラスターの現在の状態と望ましい状態を一致させるように動作します。そのために、Kubernetesは様々なタスクを自動的に実行します--コンテナを起動または再起動する、あるアプリケーションのレプリカ数を変更する、などがあります。Kubernetesコントロールプレーンは、あなたのクラスタ上で稼働するプロセスの集合体で構成されています:
+一旦desired state (望ましい状態)を設定すると、*Kubernetes コントロールプレーン* が働き、クラスターの現在の状態をdesired state (望ましい状態)に一致させます。そのためにKubernetesはさまざまなタスク(たとえば、コンテナの起動または再起動、特定アプリケーションのレプリカ数のスケーリング等)を自動的に実行します。Kubernetesコントロールプレーンは、クラスターで実行されている以下のプロセスで構成されています。
 
-* **Kubernetesマスター**は３つのプロセスから構成されており、クラスタ内でマスターノードと指定された単体ノード上で稼働します。これらのプロセスは: [kube-apiserver](/docs/admin/kube-apiserver/)、[kube-controller-manager](/docs/admin/kube-controller-manager/)、そして[kube-scheduler](/docs/admin/kube-scheduler/)です。
-
-* それぞれのマスターノードではないノードでは２つのプロセスが稼働しています:
-  * **[kubelet](/docs/admin/kubelet/)**、Kubernetesマスターと通信します。
-  * **[kube-proxy](/docs/admin/kube-proxy/)**、Kubernetesのネットワーキングサービスを各ノードに反映させるためのネットワークプロキシです。
+* **Kubernetes Master** :[kube-apiserver](/docs/admin/kube-apiserver/)、[kube-controller-manager](/docs/admin/kube-controller-manager/)、[kube-scheduler](/docs/admin/kube-scheduler/) の3プロセスの集合です。これらのプロセスはクラスター内の一つのノード上で実行されます。実行ノードはマスターノードとして指定します。
+* クラスター内の個々の非マスターノードは、それぞれ2つのプロセスを実行します。
+  * **[kubelet](/docs/admin/kubelet/)**, Kubernetes Masterと通信します。
+  * **[kube-proxy](/docs/admin/kube-proxy/)**, 各ノードのKubernetesネットワークサービスを反映するネットワークプロキシです。
 
 ## Kubernetesオブジェクト
 
-Kubernetesはシステムの状態を記述する、多数の抽象概念を持っています: デプロイされたコンテナ化されたアプリケーション、ワークロード、それらに紐付けられたネットワーク、ディスクのリソース、そして稼働しているクラスタに関するその他の情報、などです。これらの抽象概念はKubernetesAPIでオブジェクトという形で表現されます; さらなる情報は [Kubernetesオブジェクトの概要](/docs/concepts/abstractions/overview/) をご確認下さい。
+Kubernetesには、デプロイ済みのコンテナ化されたアプリケーションやワークロード、関連するネットワークとディスクリソース、クラスターが何をしているかに関するその他の情報といった、システムの状態を表現する抽象が含まれています。これらの抽象は、Kubernetes APIのオブジェクトによって表現されます。詳細については、[Kubernetesオブジェクト概要](/docs/concepts/abstractions/overview/) をご覧ください。
 
-基本的なKubernetesオブジェクトは下記になります:
+基本的なKubernetesのオブジェクトは次のとおりです。
 
 * [Pod](/docs/concepts/workloads/pods/pod-overview/)
 * [Service](/docs/concepts/services-networking/service/)
 * [Volume](/docs/concepts/storage/volumes/)
 * [Namespace](/docs/concepts/overview/working-with-objects/namespaces/)
 
-更に、Kubernetesはコントローラーと呼ばれるより高次元の抽象概念を持っています。コントローラーは、基本的なKubernetesオブジェクトを基礎としており、追加機能や便利な機能を提供します。下記のようなものを含んでいます:
+上記に加え、Kubernetesにはコントローラーと呼ばれる多くの高レベルの抽象概念が含まれています。コントローラーは基本オブジェクトに基づいて構築され、以下のような追加の機能と便利な機能を提供します。
 
 * [ReplicaSet](/docs/concepts/workloads/controllers/replicaset/)
 * [Deployment](/docs/concepts/workloads/controllers/deployment/)
@@ -46,19 +45,19 @@ Kubernetesはシステムの状態を記述する、多数の抽象概念を持�
 
 ## Kubernetesコントロールプレーン
 
-KubernetesマスターやkubeletプロセスなどのKubernetesコントロールプレーンの各部が、どのようにKubernetesがクラスタと通信するかを管理しています。コントロールプレーンがシステム内の全てのKubernetesオブジェクト情報を保持し、それらのオブジェクトの状態を管理する継続的な制御ループを走らせます。どんなときでも、コントロールプレーンで動いている制御ループはクラスタ状態の変更に反応し、実際のクラスタ状態を与えられた望ましい状態に一致させるように動きます。
+Kubernetesマスターや kubeletプロセスといったKubernetesコントロールプレーンのさまざまなパーツは、Kubernetesがクラスターとどのように通信するかを統制します。コントロールプレーンはシステム内のすべてのKubernetesオブジェクトの記録を保持し、それらのオブジェクトの状態を管理するために継続的制御ループを実行します。コントロールプレーンの制御ループは常にクラスターの変更に反応し、システム内のすべてのオブジェクトの実際の状態が、指定した状態に一致するように動作します。
 
-例えば、KubernetesAPIを通じてDeploymentオブジェクトを作成するときは、新しい望ましい状態を指定します。Kubernetesコントロールプレーンはオブジェクトの作成情報を記録し、手順に従い必要なアプリケーションを起動、クラスタノードにスケジューリングします--こうして実際のクラスタ状態が望ましい状態と一致します。
+たとえば、Kubernetes APIを使用してDeploymentオブジェクトを作成する場合、システムには新しいdesired state (望ましい状態)が提供されます。Kubernetesコントロールプレーンは、そのオブジェクトの作成を記録します。そして、要求されたアプリケーションの開始、およびクラスターノードへのスケジューリングにより指示を完遂します。このようにしてクラスターの実際の状態を望ましい状態に一致させます。
 
 ### Kubernetesマスター
 
-Kubernetesマスターはクラスタの望ましい状態の維持に責任を持っています。例えば`kubectl`コマンドラインインターフェースを通じてKubernetesを操作するときは、あなたのクラスタのKubernetesマスターと通信します。
+Kubernetesのマスターは、クラスターの望ましい状態を維持する責務を持ちます。`kubectl` コマンドラインインターフェイスを使用するなどしてKubernetesとやり取りするとき、ユーザーは実際にはクラスターにあるKubernetesのマスターと通信しています。
 
-> "マスター"とはクラスタの状態を管理するプロセスの集合体を指しています。通常、これらのプロセスはクラスタ内の単一ノード上で稼働しており、その単一ノードもマスターと呼ばれます。マスターもまた可用性、冗長性確保のために複製することが可能です。
+「マスター」とは、クラスター状態を管理するプロセスの集合を指します。通常これらのプロセスは、すべてクラスター内の単一ノードで実行されます。このノードはマスターとも呼ばれます。マスターは、可用性と冗長性のために複製することもできます。
 
 ### Kubernetesノード
 
-クラスタ内のノードはアプリケーションやクラウドワークフローが稼働する機械（仮想サーバー、物理サーバー等）です。Kubernetesマスターがそれぞれのノードを管理し、あなたがKubernetesノードと直接やり取りすることはめったにありません。
+クラスターのノードは、アプリケーションとクラウドワークフローを実行するマシン(VM、物理サーバーなど)です。Kubernetesのマスターは各ノードを制御します。運用者自身がノードと直接対話することはほとんどありません。
 
 #### オブジェクトメタデータ
 
@@ -69,6 +68,8 @@ Kubernetesマスターはクラスタの望ましい状態の維持に責任を�
 
 {{% capture whatsnext %}}
 
-コンセプトページを書きたい場合は、[ページテンプレートの使用](/docs/contribute/style/page-templates/)を参照し、コンセプトのページタイプとコンセプトテンプレートについてご確認ください。
+コンセプトページを追加したい場合は、
+[ページテンプレートの使用](/docs/home/contribute/page-templates/)
+のコンセプトページタイプとコンセプトテンプレートに関する情報を確認してください。
 
 {{% /capture %}}
